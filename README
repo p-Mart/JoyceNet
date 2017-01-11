@@ -1,0 +1,19 @@
+JoyceNet is a 2-layer LSTM Network meant to be trained on the first few chapters of the novel Finnegan's Wake, by James Joyce. Given a trained model as input (.h5 format), it will attempt to predict the following text up to some input length.
+
+Ideally the finished version will hallucinate text in a manner similar to the writing style in Finnegan's Wake. A number of optimizations and tweaks need to be done, including changes to the architecture itself, in order to bring it up to par with what I'd like it to be.
+
+Once I've trained a few successful models, they'll be uploaded here for others to experiment with.
+
+Usage: 
+python JoyceNet.py [model_name.h5]
+
+
+
+Based on the methods outlined here:
+
+Karpathy, Andrej: The Unreasonable Effectiveness of Recurrent Neural Networks:
+http://karpathy.github.io/2015/05/21/rnn-effectiveness/
+
+Olah, Christopher: Understanding LSTM Networks
+http://colah.github.io/posts/2015-08-Understanding-LSTMs/
+
