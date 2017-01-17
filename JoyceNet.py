@@ -18,7 +18,7 @@ dataset_length = len(data)
 character_map = {char : pos for pos, char in enumerate(chars)}
 inverse_character_map = {pos : char for pos, char in enumerate(chars)}
 
-sequence_length = 50
+sequence_length = 100
 
 #Convert a character into a one-hot encoded vector.
 def charToVector(input_char, character_map):
@@ -90,12 +90,12 @@ def createModel():
 	model = Sequential()	
 	model.add(LSTM(256,input_shape = (dataX.shape[1], dataX.shape[2]),
 					return_sequences = True))
-	model.add(Dropout(0.2))
+	model.add(Dropout(0.5))
 	model.add(LSTM(256))
-	model.add(Dropout(0.2))
+	model.add(Dropout(0.5))
 	model.add(Dense(dataY.shape[1], activation = 'softmax'))
 	model.compile(loss='categorical_crossentropy',optimizer='adam')
-	model.fit(dataX, dataY, nb_epoch=50, batch_size=128, verbose = 1)
+	model.fit(dataX, dataY, nb_epoch=200, batch_size=64, verbose = 1)
 
 	return model
 		
