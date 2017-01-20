@@ -8,17 +8,38 @@ from keras.layers import LSTM
 from keras.layers import Dropout
 from keras.models import load_model
 
+def preprocessData(data):
+	"""Replaces certain redundant unicode characters in the dataset."""
+	#Forgive me.
+	data = data.replace(u'\u2026', "...")
+	data = data.replace(u'\u2014',u'\u2013')
+	data = data.replace(u'\u2019', u'\'')
+	data = data.replace(u'\u2018', u'\'')
+	data = data.replace(u'\u201a',u',')
+	data = data.replace(u'\u201d',u'"')
+	data = data.replace(u'\u201c',u'"')
+	data = data.replace(u'\u0153',u' ')
+	data = data.replace(u'\u2021',u' ')
+	data = data.replace(u'\xfe',u' ')
+
+	return data
+
+
 text = open('finneganswake.txt')
-data = text.read()
+data = text.read().decode('utf-8')
+data = data[:500000].lower()
+data = preprocessData(data)
 chars = list(set(data))
+print chars
 
 output_length = len(chars)
 dataset_length = len(data)
+print output_length, dataset_length
 
 character_map = {char : pos for pos, char in enumerate(chars)}
 inverse_character_map = {pos : char for pos, char in enumerate(chars)}
 
-sequence_length = 100
+sequence_length = 50
 
 #Convert a character into a one-hot encoded vector.
 def charToVector(input_char, character_map):
@@ -91,11 +112,13 @@ def createModel():
 	model.add(LSTM(256,input_shape = (dataX.shape[1], dataX.shape[2]),
 					return_sequences = True))
 	model.add(Dropout(0.5))
+	model.add(LSTM(256, return_sequences=True))
+	model.add(Dropout(0.5))
 	model.add(LSTM(256))
 	model.add(Dropout(0.5))
 	model.add(Dense(dataY.shape[1], activation = 'softmax'))
 	model.compile(loss='categorical_crossentropy',optimizer='adam')
-	model.fit(dataX, dataY, nb_epoch=200, batch_size=64, verbose = 1)
+	model.fit(dataX, dataY, nb_epoch=100, batch_size=50, verbose = 1)
 
 	return model
 		
