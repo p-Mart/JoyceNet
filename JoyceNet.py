@@ -2,11 +2,9 @@ import numpy
 import sys
 import random
 import os.path
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras.layers import Dropout
-from keras.models import load_model
+from keras.models import *
+from keras.layers import *
+from keras.optimizers import RMSprop
 
 def preprocessData(data):
 	"""Replaces certain redundant unicode characters in the dataset."""
@@ -25,16 +23,16 @@ def preprocessData(data):
 	return data
 
 
+DATA_LENGTH = int(8e4)
+
 text = open('finneganswake.txt')
 data = text.read().decode('utf-8')
-data = data[:500000].lower()
+data = data[:DATA_LENGTH].lower()
 data = preprocessData(data)
 chars = list(set(data))
-print chars
 
 output_length = len(chars)
 dataset_length = len(data)
-print output_length, dataset_length
 
 character_map = {char : pos for pos, char in enumerate(chars)}
 inverse_character_map = {pos : char for pos, char in enumerate(chars)}
@@ -109,16 +107,15 @@ def createModel():
 	# =========== Model Architecture ===========
 	
 	model = Sequential()	
-	model.add(LSTM(256,input_shape = (dataX.shape[1], dataX.shape[2]),
+	model.add(LSTM(128,input_shape = (dataX.shape[1], dataX.shape[2]),
 					return_sequences = True))
 	model.add(Dropout(0.5))
-	model.add(LSTM(256, return_sequences=True))
-	model.add(Dropout(0.5))
-	model.add(LSTM(256))
+	model.add(LSTM(128))
 	model.add(Dropout(0.5))
 	model.add(Dense(dataY.shape[1], activation = 'softmax'))
-	model.compile(loss='categorical_crossentropy',optimizer='adam')
-	model.fit(dataX, dataY, nb_epoch=100, batch_size=50, verbose = 1)
+	optimizer = RMSprop(lr=0.01)
+	model.compile(loss='categorical_crossentropy',optimizer=optimizer)
+	model.fit(dataX, dataY, epochs=100, batch_size=128, verbose=1)
 
 	return model
 		
